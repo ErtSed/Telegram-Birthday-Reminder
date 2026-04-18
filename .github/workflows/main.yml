@@ -4,7 +4,7 @@ on:
   schedule:
     # 每天北京时间早上 9:00 运行 (UTC 01:00)
     - cron: '0 1 * * *'
-  workflow_dispatch: # 允许手动点击按钮运行
+  workflow_dispatch: 
 
 jobs:
   run-bot:
@@ -18,8 +18,10 @@ jobs:
         with:
           python-version: '3.9'
 
+      # 就是这一段！放在这里：
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          pip install requests zhdate
 
       - name: Run Script
         env:
