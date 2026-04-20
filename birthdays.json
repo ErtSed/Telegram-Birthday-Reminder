@@ -1,3 +1,17 @@
 [
-  {"name": "DiWinter", "date": "19900418", "type": "solar"}
+  {
+    "name": "张三",
+    "birthday": "20000520",
+    "type": "solar"
+  },
+  {
+    "name": "李四",
+    "birthday": "19990215",
+    "type": "lunar"
+  },
+  {
+    "name": "王五",
+    "birthday": "20021203",
+    "type": "solar"
+  }
 ]
