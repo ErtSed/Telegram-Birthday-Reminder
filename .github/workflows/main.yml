@@ -1,70 +1,29 @@
-import os
-import json
-import requests
-from datetime import datetime, timedelta, timezone
-from zhdate import ZhDate
+name: Birthday Reminder
 
-TOKEN = os.environ.get("TELEGRAM_TOKEN")
-CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+on:
+  schedule:
+    - cron: "0 0 * * *"  # UTC 0点 = 北京时间 8点
+  workflow_dispatch:     # 支持手动触发测试
 
-def send_tg_message(text):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "Markdown"}
-    res = requests.post(url, json=payload)
-    print(f"TG 响应状态: {res.status_code}")
+jobs:
+  run-reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
 
-def check_birthdays():
-    # 1. 强制使用北京时间 (UTC+8)
-    tz = timezone(timedelta(hours=8))
-    today = datetime.now(tz)
-    today_str = today.strftime("%m%d")
-    
-    print(f"--- 任务启动 ---")
-    print(f"当前北京时间: {today.strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"正在比对日期: {today_str}")
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    if not os.path.exists("birthdays.json"):
-        print("错误: 未找到 birthdays.json")
-        return
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install zhdate requests
 
-    with open("birthdays.json", "r", encoding="utf-8") as f:
-        birthdays = json.load(f)
-    
-    for person in birthdays:
-        is_birthday = False
-        name = person["name"]
-        b_date_raw = str(person["date"])
-        b_type = person.get("type", "solar")
-        
-        # 兼容处理：取最后四位月日
-        b_mmdd = b_date_raw[-4:] 
-        b_year = int(b_date_raw[:4])
-        
-        # 计算周岁
-        age = today.year - b_year
-
-        if b_type == "solar":
-            if b_mmdd == today_str:
-                is_birthday = True
-        elif b_type == "lunar":
-            try:
-                # 获取今年该农历日期对应的公历日期
-                lunar_month = int(b_mmdd[:2])
-                lunar_day = int(b_mmdd[2:])
-                lunar_date_obj = ZhDate(today.year, lunar_month, lunar_day).to_datetime()
-                if lunar_date_obj.strftime("%m%d") == today_str:
-                    is_birthday = True
-            except Exception as e:
-                print(f"农历转换错误 ({name}): {e}")
-
-        if is_birthday:
-            print(f"命中生日: {name}!")
-            tag = " (农历)" if b_type == "lunar" else ""
-            age_str = f" {age} 岁" if age > 0 else ""
-            msg = f"🎂 *生日提醒*\n\n今天是 **{name}** 的{age_str}{tag}生日！祝生日快乐！"
-            send_tg_message(msg)
-        else:
-            print(f"跳过: {name} (生日 {b_mmdd} 与今日不匹配)")
-
-if __name__ == "__main__":
-    check_birthdays()
+      - name: 运行提醒脚本
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
