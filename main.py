@@ -1,88 +1,124 @@
 import json
+import os
 import datetime
-from zhdate import ZhDate
 import requests
+from borax.calendars.lunardate import LunarDate
 
-# ====================== 配置项（GitHub Secrets 中读取） ======================
-TELEGRAM_BOT_TOKEN = ""  # 会从环境变量读取
-TELEGRAM_CHAT_ID = ""    # 会从环境变量读取
+def get_valid_lunar_date(year, month, day):
+    """
+    获取有效的农历日期。处理农历大小月问题，如果某个月没有30号，则取29号。
+    """
+    try:
+        return LunarDate(year, month, day)
+    except ValueError:
+        return LunarDate(year, month, day - 1)
 
-def load_birthdays():
-    """加载生日列表"""
-    with open("birthdays.json", "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def parse_birthday(birthday_str):
-    """解析 YYYYMMDD 格式为 年-月-日"""
-    year = int(birthday_str[:4])
-    month = int(birthday_str[4:6])
-    day = int(birthday_str[6:8])
-    return year, month, day
-
-def get_days_diff(birth_month, birth_day, is_lunar):
-    """计算距离生日的天数（忽略年份）"""
-    today = datetime.date.today()
-    
-    if is_lunar:
-        # 农历转公历
-        birth_date = ZhDate(today.year, birth_month, birth_day).to_datetime().date()
-    else:
-        # 公历直接构造
-        birth_date = datetime.date(today.year, birth_month, birth_day)
-
-    # 如果生日已过，算明年
-    if birth_date < today:
-        if is_lunar:
-            birth_date = ZhDate(today.year + 1, birth_month, birth_day).to_datetime().date()
-        else:
-            birth_date = datetime.date(today.year + 1, birth_month, birth_day)
-
-    return (birth_date - today).days
-
-def send_telegram_message(message):
-    """发送消息到 Telegram"""
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown"
+def send_telegram_message(token, chat_id, text):
+    """发送 Telegram 消息"""
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML"
     }
-    requests.post(url, data=data)
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        print("Telegram 消息发送成功！")
+    except Exception as e:
+        print(f"Telegram 消息发送失败: {e}")
 
 def main():
-    # 从环境变量读取配置
-    global TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
-    import os
-    TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-    TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+    # 1. 获取环境变量（在 Github Actions 的 Secrets 中配置）
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    
+    if not token or not chat_id:
+        print("未找到 Telegram Token 或 Chat ID，请检查环境变量配置。")
+        return
 
-    birthdays = load_birthdays()
-    reminder_list = []
+    # 2. 读取生日配置文件
+    try:
+        with open("birthdays.json", "r", encoding="utf-8") as f:
+            birthdays = json.load(f)
+    except Exception as e:
+        print(f"读取 birthdays.json 失败: {e}")
+        return
 
-    for user in birthdays:
-        name = user["name"]
-        birthday = user["birthday"]
-        b_type = user["type"]
-        year, month, day = parse_birthday(birthday)
-        
-        # 计算距离生日天数
-        days_diff = get_days_diff(month, day, is_lunar=(b_type == "lunar"))
-        
-        # 提前3天 ~ 当天提醒（0=当天，1=提前1天，2=提前2天，3=提前3天）
-        if 0 <= days_diff <= 3:
-            type_text = "农历" if b_type == "lunar" else "公历"
-            if days_diff == 0:
-                reminder_list.append(f"🎉 **{name}** 今天({type_text})生日啦！")
+    today_solar = datetime.date.today()
+    messages = []
+
+    # 3. 遍历计算每个人的生日
+    for person in birthdays:
+        name = person.get("name")
+        date_str = person.get("date")  # 格式 YYYYMMDD
+        b_type = person.get("type")    # solar (公历) 或 lunar (农历)
+
+        if not name or not date_str or not b_type:
+            continue
+
+        birth_year = int(date_str[0:4])
+        birth_month = int(date_str[4:6])
+        birth_day = int(date_str[6:8])
+
+        if b_type == "solar":
+            # 公历计算逻辑
+            try:
+                this_year_bday = datetime.date(today_solar.year, birth_month, birth_day)
+            except ValueError:
+                # 处理闰年2月29日生日，非闰年视作3月1日
+                this_year_bday = datetime.date(today_solar.year, 3, 1)
+
+            if this_year_bday < today_solar:
+                # 今年的生日已经过了，计算明年的
+                try:
+                    next_bday = datetime.date(today_solar.year + 1, birth_month, birth_day)
+                except ValueError:
+                    next_bday = datetime.date(today_solar.year + 1, 3, 1)
             else:
-                reminder_list.append(f"📅 **{name}** 还有 {days_diff} 天过{type_text}生日！")
+                next_bday = this_year_bday
+            
+            age = next_bday.year - birth_year
+            date_display = f"公历 {birth_month}月{birth_day}日"
 
-    # 有需要提醒的就发送消息
-    if reminder_list:
-        final_msg = "🎂 生日提醒\n\n" + "\n".join(reminder_list)
-        send_telegram_message(final_msg)
-        print("已发送提醒：", final_msg)
+        elif b_type == "lunar":
+            # 农历计算逻辑
+            today_lunar = LunarDate.from_solar_date(today_solar.year, today_solar.month, today_solar.day)
+            
+            # 推算今年的农历生日对应的公历日期
+            this_year_lunar_bday = get_valid_lunar_date(today_lunar.year, birth_month, birth_day)
+            this_year_solar_bday = this_year_lunar_bday.to_solar_date()
+
+            if this_year_solar_bday < today_solar:
+                # 今年的农历生日已经过了，计算明年的
+                next_lunar_bday = get_valid_lunar_date(today_lunar.year + 1, birth_month, birth_day)
+                next_bday = next_lunar_bday.to_solar_date()
+            else:
+                next_bday = this_year_solar_bday
+            
+            age = next_bday.year - birth_year
+            date_display = f"农历 {this_year_lunar_bday.cn_month}月{this_year_lunar_bday.cn_day}"
+            
+        else:
+            continue
+
+        # 计算距离下次生日还有多少天
+        days_left = (next_bday - today_solar).days
+
+        # 4. 判断是否在提醒范围内（提前3天至当天）
+        if 0 <= days_left <= 3:
+            if days_left == 0:
+                msg = f"🎂 <b>{name}</b> 的生日就是今天啦！（{date_display}，{age}岁）\n快去送上祝福吧！"
+            else:
+                msg = f"⏳ 距离 <b>{name}</b> 的生日还有 <b>{days_left}</b> 天！（{date_display}，即将 {age} 岁）"
+            messages.append(msg)
+
+    # 5. 汇总并发送提醒
+    if messages:
+        final_text = "🎉 <b>生日提醒</b> 🎉\n\n" + "\n\n".join(messages) + "\n\n<i>—— 你的专属提醒小助手 盖 IM 米啦</i>"
+        send_telegram_message(token, chat_id, final_text)
     else:
-        print("今日无生日提醒")
+        print("今天没有需要提醒的生日。")
 
 if __name__ == "__main__":
     main()
