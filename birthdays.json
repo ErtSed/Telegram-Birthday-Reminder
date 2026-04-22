@@ -1,17 +1,12 @@
 [
-  {
-    "name": "张三",
-    "birthday": "20000520",
-    "type": "solar"
-  },
-  {
-    "name": "李四",
-    "birthday": "19990215",
-    "type": "lunar"
-  },
-  {
-    "name": "王五",
-    "birthday": "20021203",
-    "type": "solar"
-  }
+    {
+        "name": "张三 (公历演示)",
+        "date": "19980425",
+        "type": "solar"
+    },
+    {
+        "name": "李四 (农历演示)",
+        "date": "19960815",
+        "type": "lunar"
+    }
 ]
