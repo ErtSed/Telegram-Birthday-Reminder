@@ -1,29 +1,32 @@
-name: Birthday Reminder
+name: Daily Birthday Reminder
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # UTC 0点 = 北京时间 8点
-  workflow_dispatch:     # 支持手动触发测试
+    # 每天 UTC 时间 00:00 执行（对应北京时间早上 08:00）
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 允许你在 Github 网页上手动点击运行测试
 
 jobs:
   run-reminder:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 拉取代码
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: 安装 Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: 安装依赖
-        run: |
-          python -m pip install --upgrade pip
-          pip install zhdate requests
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: 运行提醒脚本
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python main.py
+    - name: Run Birthday Reminder Script
+      env:
+        # 从 Github Secrets 获取环境变量
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: python main.py
