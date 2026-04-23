@@ -1,17 +1,28 @@
 [
     {
-        "name": "张三 (公历演示)",
-        "date": "19980423",
+        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+    },
+    {
+        "name": "程迪冬",
+        "date": "19741106",
         "type": "solar"
     },
     {
-        "name": "王五 (公历演示)",
-        "date": "19980423",
+        "name": "程柯锐",
+        "date": "20070424",
         "type": "solar"
     },
     {
-        "name": "李四 (农历演示)",
-        "date": "19960308",
+        "name": "程梓昂",
+        "date": "20120425",
+        "type": "solar"
+    },
+    {
+        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+    },
+    {
+        "name": "张淑艳",
+        "date": "19760308",
         "type": "lunar"
     }
 ]
