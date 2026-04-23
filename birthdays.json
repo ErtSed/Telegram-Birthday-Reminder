@@ -3,18 +3,28 @@
         "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
     },
     {
+        "name": "张淑艳",
+        "date": "19760425",
+        "type": "solar"
+    },
+    {
         "name": "程迪冬",
         "date": "19741106",
         "type": "solar"
     },
     {
         "name": "程柯锐",
-        "date": "20070424",
+        "date": "20071120",
         "type": "solar"
     },
     {
         "name": "程梓昂",
-        "date": "20120425",
+        "date": "20121002",
+        "type": "solar"
+    },
+    {
+        "name": "结💐婚",
+        "date": "20040424",
         "type": "solar"
     },
     {
@@ -22,7 +32,22 @@
     },
     {
         "name": "张淑艳",
-        "date": "19760308",
+        "date": "19760801",
+        "type": "lunar"
+    },
+    {
+        "name": "程迪冬",
+        "date": "19740923",
+        "type": "lunar"
+    },
+    {
+        "name": "程柯锐",
+        "date": "20071011",
+        "type": "lunar"
+    },
+    {
+        "name": "程梓昂",
+        "date": "20120817",
         "type": "lunar"
     }
 ]
