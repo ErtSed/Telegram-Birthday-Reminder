@@ -1,6 +1,6 @@
 [
     {
-        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+        "_note": "生日格式：YYYYMMDD；solar=公历；lunar=农历。"
     },
     {
         "name": "张淑艳",
@@ -23,12 +23,32 @@
         "type": "solar"
     },
     {
+        "name": "程迪梅",
+        "date": "19790221",
+        "type": "solar"
+    },
+    {
+        "name": "吴迪",
+        "date": "20051029",
+        "type": "solar"
+    },
+    {
+        "name": "朱铭海",
+        "date": "20180324",
+        "type": "solar"
+    },
+    {
         "name": "结💐婚",
         "date": "20040424",
         "type": "solar"
     },
     {
-        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+        "name": "全家福",
+        "date": "20071130",
+        "type": "solar"
+    },
+    {
+        "_note": "生日格式：YYYYMMDD；solar=公历；lunar=农历。"
     },
     {
         "name": "张淑艳",
@@ -37,7 +57,7 @@
     },
     {
         "name": "程迪冬",
-        "date": "19740923",
+        "date": "19740309",
         "type": "lunar"
     },
     {
@@ -48,6 +68,41 @@
     {
         "name": "程梓昂",
         "date": "20120817",
+        "type": "lunar"
+    },
+    {
+        "name": "程昌荣",
+        "date": "19461001",
+        "type": "lunar"
+    },
+    {
+        "name": "涂洪琴",
+        "date": "19531218",
+        "type": "lunar"
+    },
+    {
+        "name": "程迪梅",
+        "date": "19790125",
+        "type": "lunar"
+    },
+    {
+        "name": "吴迪",
+        "date": "20050927",
+        "type": "lunar"
+    },
+    {
+        "name": "朱铭海",
+        "date": "20180208",
+        "type": "lunar"
+    },
+    {
+        "name": "王秀珍",
+        "date": "19510615",
+        "type": "lunar"
+    },
+    {
+        "name": "父亲去世",
+        "date": "20121227",
         "type": "lunar"
     }
 ]
