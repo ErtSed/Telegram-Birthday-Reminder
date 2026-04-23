@@ -115,7 +115,7 @@ def main():
 
     # 5. 汇总并发送提醒
     if messages:
-        final_text = "🎉 <b>生日提醒</b> 🎉\n\n" + "\n\n".join(messages) + "\n\n<i>—— 你的专属提醒小助手 盖 IM 米啦</i>"
+        final_text = "🎉 <b>生日提醒</b> 🎉\n\n" + "\n\n".join(messages) + "\n\n<i>—— 你的专属提醒小助手 DiWinter</i>"
         send_telegram_message(token, chat_id, final_text)
     else:
         print("今天没有需要提醒的生日。")
