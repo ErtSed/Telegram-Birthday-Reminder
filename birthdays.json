@@ -5,11 +5,6 @@
         "type": "solar"
     },
     {
-        "name": "王五 (公历演示)",
-        "date": "19980425",
-        "type": "solar"
-    },
-    {
         "name": "李四 (农历演示)",
         "date": "199600308",
         "type": "lunar"
