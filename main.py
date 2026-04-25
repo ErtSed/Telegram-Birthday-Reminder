@@ -29,7 +29,7 @@ def send_telegram_message(token, chat_id, text):
         print(f"Telegram 消息发送失败: {e}")
 
 def main():
-    # 1. 获取环境变量（在 Github Actions 的 Secrets 中配置）
+    # 1. 获取环境变量
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     
@@ -45,7 +45,13 @@ def main():
         print(f"读取 birthdays.json 失败: {e}")
         return
 
-    today_solar = datetime.date.today()
+    # ================= 核心修复：强制使用北京时间 (UTC+8) =================
+    # 获取北京时间的时区对象
+    tz_bj = datetime.timezone(datetime.timedelta(hours=8))
+    # 以北京时间获取“今天”的日期
+    today_solar = datetime.datetime.now(tz_bj).date()
+    # ======================================================================
+
     messages = []
 
     # 3. 遍历计算每个人的生日
@@ -115,6 +121,7 @@ def main():
 
     # 5. 汇总并发送提醒
     if messages:
+        # 落款更新为你自定义的 DiWinter
         final_text = "🎉 <b>生日提醒</b> 🎉\n\n" + "\n\n".join(messages) + "\n\n<i>—— 你的专属提醒小助手 DiWinter</i>"
         send_telegram_message(token, chat_id, final_text)
     else:
