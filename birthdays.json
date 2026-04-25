@@ -1,6 +1,6 @@
 [
     {
-        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+        "_note": "生日格式：YYYYMMDD；solar=公历；lunar=农历。"
     },
     {
         "name": "张淑艳",
@@ -38,6 +38,11 @@
         "type": "solar"
     },
     {
+        "name": "张淑杰",
+        "date": "19800110",
+        "type": "solar"
+    },
+    {
         "name": "结💐婚",
         "date": "20041122",
         "type": "solar"
@@ -46,9 +51,9 @@
         "name": "全家福",
         "date": "20071130",
         "type": "solar"
-    },
+    },    
     {
-        "_note": "生日格式:YYYYMMDD；solar=公历；lunar=农历。"
+        "_note": "生日格式：YYYYMMDD；solar=公历；lunar=农历。"
     },
     {
         "name": "张淑艳",
@@ -69,7 +74,7 @@
         "name": "程梓昂",
         "date": "20120817",
         "type": "lunar"
-    },
+    }, 
     {
         "name": "程昌荣",
         "date": "19461001",
@@ -99,7 +104,12 @@
         "name": "王秀珍",
         "date": "19510615",
         "type": "lunar"
-    },
+    },    
+    {
+        "name": "张淑杰",
+        "date": "19800110",
+        "type": "lunar"
+    }, 
     {
         "name": "父亲去世",
         "date": "20121227",
